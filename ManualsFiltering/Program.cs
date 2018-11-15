@@ -55,23 +55,43 @@ class Program
                     break;
 
                 case "7":
-                    favoriteModuleList = addFavorite(partialModuleList, fullModuleList);
+                    favoriteModuleList = addFavorite(favoriteModuleList, partialModuleList, fullModuleList);
                     break;
 
                 case "8":
+                    displayPartialModules(favoriteModuleList);
                     break;
 
                 default:
                     Console.WriteLine("That is not a valid command, please enter a new command.");
                     break;
             }
-        } while (command != "8");
+        } while (command != "X");
 
         Console.WriteLine("Thank you for using this program.  Press enter to exit.");
         Console.ReadLine();
     }
 
-
+    //Method to add a module to the favorites list.
+    public static List<Module> addFavorite(List<Module> favList, List<Module> tempList, List<Module> fulllist)
+    {
+        Console.WriteLine("Please enter the index of the module to add.  Leave blank if you don't know it.");
+        int currentIndex = Convert.ToInt32(Console.ReadLine());
+        if (currentIndex < tempList.Count)
+        {
+            if (tempList[currentIndex] != null)
+            {
+                if (!favList.Contains(tempList[currentIndex]))
+                {
+                    tempList[currentIndex].indexPosition = favList.Count;
+                    favList.Add(tempList[currentIndex]);
+                    Console.WriteLine("Added to favorites.");
+                    Console.ReadLine();
+                }
+            }
+        }
+        return favList;
+    }
 
     //Method to display the current list
     public static void displayPartialModules(List<Module> targetModules)
@@ -135,7 +155,7 @@ class Program
             case "twitchplaysscore":
                 foreach (Module module in allModules)
                 {
-                    if (module.TwitchPlaysScore != null && module.TwitchPlaysScore == Convert.ToInt32(searchString))
+                    if (module.TwitchPlaysScore >0 && module.TwitchPlaysScore == Convert.ToInt32(searchString))
                     {
                         module.indexPosition = indexPos++;
                         tempModuleList.Add(module);
@@ -177,8 +197,8 @@ class Program
         Console.WriteLine("5. Select modules by diffuser difficulty.");
         Console.WriteLine("6. Select modules by score.");
         Console.WriteLine("7. Add module to favourites.");
-        Console.WriteLine("----------------------");
-        Console.WriteLine("8. Exit Program");
+        Console.WriteLine("8. View favourites.");
+        Console.WriteLine("X. Exit Program");
         string command = Console.ReadLine();
         return command;
     }

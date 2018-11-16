@@ -3,7 +3,7 @@ C# Code Louisville Project
 
 This project is used to sort through a JSON of the various modules from the game "Keep Talking and Nobody Explodes", based on name, difficulty, or point score.  Users can search for modules that fit certain criteria, and save them to a favorites list, which can be saved as .txt and .json files for future consumption.
 
-To use this program, download the project and open it in Visual Studio.  Executing directly from Visual Studio will allow the user full access to all necessary operations.
+To use this program, download the project and open it in Visual Studio.  Open Program.cs, and run via F5. (Or, you could build and use that way.)
 
 While using this program, a filter list will be initialized upon start.  Search criteria will limit results, and further searches will limit within the previous results list only.  To start a new search from the full list, use the option to reset the 'selected' list.
 

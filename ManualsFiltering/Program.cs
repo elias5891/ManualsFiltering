@@ -235,11 +235,20 @@ class Program
     {
         var serializer = new JsonSerializer();
         var fileLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), fileName));
-        using (var reader = new StreamReader(fileLocation))
-        using (var jsonReader = new JsonTextReader(reader))
+        if (!File.Exists(fileLocation))
         {
-            return serializer.Deserialize<List<Module>>(jsonReader);
+            fileLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\", fileName));
         }
+        {
+            using (var reader = new StreamReader(fileLocation))
+            using (var jsonReader = new JsonTextReader(reader))
+
+            {
+                return serializer.Deserialize<List<Module>>(jsonReader);
+            }
+        }
+
+
     }
 
     //Method to show options for how to interact with the program.
@@ -258,7 +267,7 @@ class Program
         Console.WriteLine("7. Add module to favorites.");
         Console.WriteLine("8. Remove module from favorites.");
         Console.WriteLine("9. View favorites.");
-        Console.WriteLine("X. Save favorites and exit.");
+        Console.WriteLine("0. Save favorites and exit.");
         string command = Console.ReadLine();
         return command;
     }

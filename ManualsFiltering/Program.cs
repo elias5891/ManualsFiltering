@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using System.Linq;
 using ManualsFiltering;
 
 class Program
@@ -11,13 +10,14 @@ class Program
     static void Main(string[] args)
     {
 
-        var fullModuleList = new List<Module>();
+        List<Module> fullModuleList = new List<Module>();
         List<Module> partialModuleList = new List<Module>();
-        var favoriteModuleList = new List<Module>();
+        List<Module> favoriteModuleList = new List<Module>();
         var command = "";
 
         //TODO: Pull from the previously saved version.
         fullModuleList = getModuleList("ListOfModules.json");
+        indexAll(fullModuleList);
         partialModuleList.AddRange(fullModuleList);
 
         do
@@ -59,7 +59,14 @@ class Program
                     break;
 
                 case "8":
+                    favoriteModuleList = removeFavorite(favoriteModuleList);
+                    break;
+
+                case "9":
                     displayPartialModules(favoriteModuleList);
+                    break;
+
+                case "X":
                     break;
 
                 default:
@@ -72,19 +79,38 @@ class Program
         Console.ReadLine();
     }
 
+
+    //Method to remove a module from the favorites list.
+    public static List<Module> removeFavorite(List<Module> favList)
+    {
+        Console.WriteLine("Please enter the index of the module to remove.  Leave blank if you don't know it.");
+        int currentIndex = Convert.ToInt32(Console.ReadLine());
+        foreach(Module mod in favList)
+        {
+            if (mod.indexPosition == currentIndex)
+            {
+                favList.Remove(mod);
+                Console.WriteLine("Module removed from favorites.");
+                Console.ReadLine();
+                return favList;
+            }
+        }
+        return favList;
+    }
+
+
     //Method to add a module to the favorites list.
-    public static List<Module> addFavorite(List<Module> favList, List<Module> tempList, List<Module> fulllist)
+    public static List<Module> addFavorite(List<Module> favList, List<Module> tempList, List<Module> fullList)
     {
         Console.WriteLine("Please enter the index of the module to add.  Leave blank if you don't know it.");
         int currentIndex = Convert.ToInt32(Console.ReadLine());
-        if (currentIndex < tempList.Count)
+        if (currentIndex < fullList.Count)
         {
-            if (tempList[currentIndex] != null)
+            if (fullList[currentIndex] != null)
             {
-                if (!favList.Contains(tempList[currentIndex]))
+                if (!favList.Contains(fullList[currentIndex]))
                 {
-                    tempList[currentIndex].indexPosition = favList.Count;
-                    favList.Add(tempList[currentIndex]);
+                    favList.Add(fullList[currentIndex]);
                     Console.WriteLine("Added to favorites.");
                     Console.ReadLine();
                 }
@@ -120,45 +146,41 @@ class Program
         switch (criteria)
         {
             case "name":
-                foreach (Module module in allModules)
+                for (int i = 0;i < allModules.Count; i++)
                 {
-                    if (module.Name.ToUpper().Contains(searchString.ToUpper()))
+                    if (allModules[i].Name.ToUpper().Contains(searchString.ToUpper()))
                     {
-                        module.indexPosition = indexPos++;
-                        tempModuleList.Add(module);
+                        tempModuleList.Add(allModules[i]);
                     }
                 }
                 break;
 
             case "defuserdifficulty":
-                foreach (Module module in allModules)
+                for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (module.DefuserDifficulty != null && module.DefuserDifficulty.ToUpper().Contains(searchString.ToUpper()))
+                    if (allModules[i].DefuserDifficulty != null && allModules[i].DefuserDifficulty.ToUpper().Contains(searchString.ToUpper()))
                     {
-                        module.indexPosition = indexPos++;
-                        tempModuleList.Add(module);
+                        tempModuleList.Add(allModules[i]);
                     }
                 }
                 break;
 
             case "expertdifficulty":
-                foreach (Module module in allModules)
+                for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (module.ExpertDifficulty != null && module.ExpertDifficulty.ToUpper().Contains(searchString.ToUpper()))
+                    if (allModules[i].ExpertDifficulty != null && allModules[i].ExpertDifficulty.ToUpper().Contains(searchString.ToUpper()))
                     {
-                        module.indexPosition = indexPos++;
-                        tempModuleList.Add(module);
+                        tempModuleList.Add(allModules[i]);
                     }
                 }
                 break;
 
             case "twitchplaysscore":
-                foreach (Module module in allModules)
+                for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (module.TwitchPlaysScore >0 && module.TwitchPlaysScore == Convert.ToInt32(searchString))
+                    if (allModules[i].TwitchPlaysScore > 0 && allModules[i].TwitchPlaysScore == Convert.ToInt32(searchString))
                     {
-                        module.indexPosition = indexPos++;
-                        tempModuleList.Add(module);
+                        tempModuleList.Add(allModules[i]);
                     }
                 }
                 break;
@@ -171,11 +193,21 @@ class Program
     }
 
 
+    //Set Index position equal to the module's location in the master list.
+    public static void indexAll(List<Module> fullModuleList)
+    {
+        for (int i= 0;i < fullModuleList.Count; i++)
+        {
+            fullModuleList[i].indexPosition = i;
+        }
+        return;
+    }
+
     //Method to convert json file to a set of Module objects in fullModuleList
     public static List<Module> getModuleList(string fileName)
     {
         var serializer = new JsonSerializer();
-        var fileLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\", fileName));
+        var fileLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), fileName));
         using (var reader = new StreamReader(fileLocation))
         using (var jsonReader = new JsonTextReader(reader))
         {
@@ -196,8 +228,9 @@ class Program
         Console.WriteLine("4. Select modules by expert difficulty.");
         Console.WriteLine("5. Select modules by diffuser difficulty.");
         Console.WriteLine("6. Select modules by score.");
-        Console.WriteLine("7. Add module to favourites.");
-        Console.WriteLine("8. View favourites.");
+        Console.WriteLine("7. Add module to favorites.");
+        Console.WriteLine("8. Remove module from favorites.");
+        Console.WriteLine("9. View favourites.");
         Console.WriteLine("X. Exit Program");
         string command = Console.ReadLine();
         return command;

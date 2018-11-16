@@ -9,20 +9,22 @@ class Program
 
     static void Main(string[] args)
     {
-
+        //Initialize necessary Lists.
         List<Module> fullModuleList = new List<Module>();
         List<Module> partialModuleList = new List<Module>();
         List<Module> favoriteModuleList = new List<Module>();
         var command = "";
-
-        //TODO: Pull from the previously saved version.
         fullModuleList = getModuleList("ListOfModules.json");
         indexAll(fullModuleList);
         partialModuleList.AddRange(fullModuleList);
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Favorites.json"))) //If Favorites list already exists, load it up as well.
+            favoriteModuleList = getModuleList("Favorites.json");
+        
 
+        //Main loop -- run through menu options until the program is exited.
         do
         {
-            command = displayOptions(); //Display the table of options of what to do with the data.
+            command = displayOptions(); 
             switch (command)
             {
                 case "1":
@@ -66,7 +68,7 @@ class Program
                     displayPartialModules(favoriteModuleList);
                     break;
                 
-                case "X":
+                case "0":
                     writeFavorites(favoriteModuleList);
                     break;
 
@@ -74,7 +76,7 @@ class Program
                     Console.WriteLine("That is not a valid command, please enter a new command.");
                     break;
             }
-        } while (command != "X");
+        } while (command != "0");
 
         Console.WriteLine("Thank you for using this program.  Press enter to exit.");
         Console.ReadLine();
@@ -82,9 +84,28 @@ class Program
 
 
     //Method to write the favorites list.
-    public static writeFavorites(List<Module> favList)
+    public static void writeFavorites(List<Module> favList)
     {
-
+        {
+            //Write the objects to a JSON file for reloading on future runs.
+            var fileLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Favorites.json")); 
+            using (var writer = new StreamWriter(fileLocation))
+            using (var jsonWriter = new JsonTextWriter(writer))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(jsonWriter, favList);
+            }
+            //Also, write to a plaintext a user-friendly version of the data that is displayed.
+            using (System.IO.StreamWriter writeFile = 
+                new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "Favorites.txt")))  
+           {
+               foreach (Module mod in favList)
+               {
+                    writeFile.WriteLine("Module: " + mod.Name + " (" + mod.DefuserDifficulty + "/" + mod.ExpertDifficulty + ") {" + mod.TwitchPlaysScore + "}");
+               }
+           }
+        }
+        return;
     }
 
     //Method to remove a module from the favorites list.
@@ -147,15 +168,14 @@ class Program
     public static List<Module> searchModuleList(string criteria, List<Module> allModules)
     {
         var tempModuleList = new List<Module>();
-        var indexPos = 0;
         Console.WriteLine("Please enter the criteria you are looking for.");
         var searchString = Console.ReadLine();
-        switch (criteria)
+        switch (criteria) // split exact search method by type of search.
         {
             case "name":
-                for (int i = 0;i < allModules.Count; i++)
+                for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (allModules[i].Name.ToUpper().Contains(searchString.ToUpper()))
+                    if (!tempModuleList.Contains(allModules[i]) && allModules[i].Name.ToUpper().Contains(searchString.ToUpper())) //remove case sensitivity from search, and don't re-catch if it's already in the list from a previous search.
                     {
                         tempModuleList.Add(allModules[i]);
                     }
@@ -165,7 +185,7 @@ class Program
             case "defuserdifficulty":
                 for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (allModules[i].DefuserDifficulty != null && allModules[i].DefuserDifficulty.ToUpper().Contains(searchString.ToUpper()))
+                    if (!tempModuleList.Contains(allModules[i]) && allModules[i].DefuserDifficulty != null && allModules[i].DefuserDifficulty.ToUpper().Contains(searchString.ToUpper())) //In addition to above, also exclude items with no difficulties.
                     {
                         tempModuleList.Add(allModules[i]);
                     }
@@ -175,7 +195,7 @@ class Program
             case "expertdifficulty":
                 for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (allModules[i].ExpertDifficulty != null && allModules[i].ExpertDifficulty.ToUpper().Contains(searchString.ToUpper()))
+                    if (!tempModuleList.Contains(allModules[i]) && allModules[i].ExpertDifficulty != null && allModules[i].ExpertDifficulty.ToUpper().Contains(searchString.ToUpper()))
                     {
                         tempModuleList.Add(allModules[i]);
                     }
@@ -185,7 +205,7 @@ class Program
             case "twitchplaysscore":
                 for (int i = 0; i < allModules.Count; i++)
                 {
-                    if (allModules[i].TwitchPlaysScore > 0 && allModules[i].TwitchPlaysScore == Convert.ToInt32(searchString))
+                    if (!tempModuleList.Contains(allModules[i]) && allModules[i].TwitchPlaysScore > 0 && allModules[i].TwitchPlaysScore == Convert.ToInt32(searchString))
                     {
                         tempModuleList.Add(allModules[i]);
                     }
@@ -200,7 +220,7 @@ class Program
     }
 
 
-    //Set Index position equal to the module's location in the master list.
+    //Set Index position for each module to the module's location in the master list.
     public static void indexAll(List<Module> fullModuleList)
     {
         for (int i= 0;i < fullModuleList.Count; i++)

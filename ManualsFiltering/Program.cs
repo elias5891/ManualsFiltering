@@ -65,8 +65,9 @@ class Program
                 case "9":
                     displayPartialModules(favoriteModuleList);
                     break;
-
+                
                 case "X":
+                    writeFavorites(favoriteModuleList);
                     break;
 
                 default:
@@ -79,6 +80,12 @@ class Program
         Console.ReadLine();
     }
 
+
+    //Method to write the favorites list.
+    public static writeFavorites(List<Module> favList)
+    {
+
+    }
 
     //Method to remove a module from the favorites list.
     public static List<Module> removeFavorite(List<Module> favList)
@@ -230,8 +237,8 @@ class Program
         Console.WriteLine("6. Select modules by score.");
         Console.WriteLine("7. Add module to favorites.");
         Console.WriteLine("8. Remove module from favorites.");
-        Console.WriteLine("9. View favourites.");
-        Console.WriteLine("X. Exit Program");
+        Console.WriteLine("9. View favorites.");
+        Console.WriteLine("X. Save favorites and exit.");
         string command = Console.ReadLine();
         return command;
     }

@@ -19,7 +19,8 @@ class Program
         partialModuleList.AddRange(fullModuleList);
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "Favorites.json"))) //If Favorites list already exists, load it up as well.
             favoriteModuleList = getModuleList("Favorites.json");
-        
+        if(File.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\", "Favorites.json")))
+            favoriteModuleList = getModuleList("Favorites.json");
 
         //Main loop -- run through menu options until the program is exited.
         do

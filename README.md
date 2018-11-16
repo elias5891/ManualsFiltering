@@ -8,6 +8,9 @@ To use this program, download the project and open it in Visual Studio.  Executi
 While using this program, a filter list will be initialized upon start.  Search criteria will limit results, and further searches will limit within the previous results list only.  To start a new search from the full list, use the option to reset the 'selected' list.
 
 For those unfamiliar with the game, a full list of the modules can be found at http://ktane.timwi.de.  For testing purposes, the following criteria can be used:
+
   Expert Difficulty and Defuser Difficulty is either VeryEasy, Easy, Medium, Hard, or VeryHard.
-  Score ranges between 1 and 20.
-  There are lots of various names, but words "Simon", "Morse", "Color", and "Maze" are words that appear in a large number of modules.
+
+ Score ranges between 1 and 20.
+
+ There are lots of various names, but words "Simon", "Morse", "Color", and "Maze" are words that appear in a large number of modules.
